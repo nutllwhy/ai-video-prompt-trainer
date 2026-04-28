@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI视频提示词训练营</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .score-ring {
+            background: conic-gradient(#6366f1 var(--score), #e5e7eb var(--score));
+        }
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+        .template-card:hover {
+            border-color: #6366f1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-800">AI视频提示词训练营</span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <button onclick="showSection('learn')" class="nav-btn text-gray-600 hover:text-primary transition" data-section="learn">学习中心</button>
+                    <button onclick="showSection('templates')" class="nav-btn text-gray-600 hover:text-primary transition" data-section="templates">场景模板</button>
+                    <button onclick="showSection('workshop')" class="nav-btn text-gray-600 hover:text-primary transition" data-section="workshop">提示词工坊</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 学习中心 -->
+    <section id="learn-section" class="section-content">
+        <div class="max-w-4xl mx-auto px-4 py-12">
+            <div class="text-center mb-12">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">掌握AI视频提示词，从这里开始</h1>
+                <p class="text-gray-600">这份手册不是为了让大家"背咒语"，而是为了让大家不必每次从零抽卡</p>
+            </div>
+
+            <!-- 核心思路 -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 mb-8">
+                <h2 class="font-semibold text-indigo-800 mb-3">核心思路</h2>
+                <p class="text-indigo-700">不要只给一堆零散提示词，要给一套"可复制、可替换、可修正"的生成框架。</p>
+            </div>
+
+            <!-- 学习进度 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-medium text-gray-600">学习进度</span>
+                    <span class="text-sm text-primary font-medium" id="progress-text">0/4 已完成</span>
+                </div>
+                <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full gradient-bg transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- 学习步骤 -->
+            <div class="space-y-6">
+                <!-- 步骤1: 固定骨架 -->
+                <div class="bg-white rounded-2xl shadow-sm card-hover transition-all duration-300 overflow-hidden" data-step="1">
+                    <button onclick="toggleStep(1)" class="w-full p-6 flex items-center gap-4 text-left">
+                        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <span class="text-primary font-bold">1</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-800">固定骨架：提示词万能公式</h3>
+                            <p class="text-gray-500 text-sm mt-1">掌握提示词的标准结构，知道改哪个变量会影响结果</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 transform transition-transform step-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="step-content-1" class="hidden px-6 pb-6">
+                        <div class="border-t pt-6 space-y-4">
+                            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-5">
+                                <h4 class="font-medium text-indigo-800 mb-3">提示词骨架公式</h4>
+                                <div class="bg-white rounded-lg p-4 font-mono text-sm leading-relaxed">
+                                    <span class="text-blue-600">[主体]</span> + 
+                                    <span class="text-green-600">[动作/状态]</span> + 
+                                    <span class="text-purple-600">[环境/场景]</span> + 
+                                    <span class="text-orange-600">[风格/氛围]</span> + 
+                                    <span class="text-pink-600">[镜头/运动]</span>
+                                </div>
+                            </div>
+                            
+                            <div class="grid gap-3">
+                                <div class="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
+                                    <span class="text-blue-600 font-bold text-sm min-w-[60px]">主体</span>
+                                    <div>
+                                        <p class="text-sm text-gray-700">画面的主角是什么？人物、动物、物体、产品...</p>
+                                        <p class="text-xs text-gray-500 mt-1">例：一位穿着西装的商务人士、一瓶晶莹剔透的香水</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
+                                    <span class="text-green-600 font-bold text-sm min-w-[60px]">动作</span>
+                                    <div>
+                                        <p class="text-sm text-gray-700">主体在做什么？静态还是动态？动作要具体有方向感</p>
+                                        <p class="text-xs text-gray-500 mt-1">例：缓缓旋转展示、自信地走向镜头、轻柔地飘动</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3 p-4 bg-purple-50 rounded-lg">
+                                    <span class="text-purple-600 font-bold text-sm min-w-[60px]">环境</span>
+                                    <div>
+                                        <p class="text-sm text-gray-700">场景在哪里？室内/室外？白天/夜晚？具体的空间感</p>
+                                        <p class="text-xs text-gray-500 mt-1">例：现代化办公室、阳光明媚的草地、蓝黑色科技感背景</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
+                                    <span class="text-orange-600 font-bold text-sm min-w-[60px]">风格</span>
+                                    <div>
+                                        <p class="text-sm text-gray-700">视觉风格？电影感、企业宣传、品牌广告、科技发布会...</p>
+                                        <p class="text-xs text-gray-500 mt-1">例：电影感画面、企业宣传片质感、高级商业广告风格</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3 p-4 bg-pink-50 rounded-lg">
+                                    <span class="text-pink-600 font-bold text-sm min-w-[60px]">镜头</span>
+                                    <div>
+                                        <p class="text-sm text-gray-700">运镜方式？特写、全景、推镜头、跟拍、航拍...</p>
+                                        <p class="text-xs text-gray-500 mt-1">例：特写镜头、中景镜头缓慢推进、航拍视角</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-yellow-50 rounded-xl p-5">
+                                <h4 class="font-medium text-yellow-800 mb-2">对比示例</h4>
+                                <div class="space-y-3">
+                                    <div class="bg-white rounded-lg p-3">
+                                        <div class="text-xs text-red-500 mb-1">模糊的提示词</div>
+                                        <p class="text-sm text-gray-600">一个女孩在跳舞</p>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-3">
+                                        <div class="text-xs text-green-500 mb-1">好的提示词</div>
+                                        <p class="text-sm text-gray-600">一位穿着白色连衣裙的年轻女孩，在阳光明媚的草地上翩翩起舞，裙摆随风飘动，背景是蓝天白云，电影感画面，柔和的自然光，慢动作特写镜头</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="completeStep(1)" class="w-full py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition">
+                                已掌握，继续学习
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步骤2: 高频模块 -->
+                <div class="bg-white rounded-2xl shadow-sm card-hover transition-all duration-300 overflow-hidden" data-step="2">
+                    <button onclick="toggleStep(2)" class="w-full p-6 flex items-center gap-4 text-left">
+                        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                            <span class="text-gray-400 font-bold">2</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-800">高频模块：可直接复用的描述语句</h3>
+                            <p class="text-gray-500 text-sm mt-1">掌握运镜、风格、氛围等高频模块，直接套用</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 transform transition-transform step-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="step-content-2" class="hidden px-6 pb-6">
+                        <div class="border-t pt-6 space-y-6">
+                            <!-- 运镜类 -->
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-3 flex items-center gap-2">
+                                    <span class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center text-blue-600 text-xs">1</span>
+                                    运镜类
+                                </h4>
+                                <div class="grid gap-2">
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">镜头稳定克制，缓慢推进，适合人物口播或知识分享</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">航拍视角，从高空俯瞰，展示空间全貌</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">特写镜头，聚焦细节，强调产品质感</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">跟拍镜头，主体移动，镜头跟随</div>
+                                </div>
+                            </div>
+
+                            <!-- 光影类 -->
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-3 flex items-center gap-2">
+                                    <span class="w-6 h-6 bg-yellow-100 rounded flex items-center justify-center text-yellow-600 text-xs">2</span>
+                                    光影类
+                                </h4>
+                                <div class="grid gap-2">
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">光线柔和，画面明亮干净，传递专业可信感</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">科技感蓝色光效，与简洁背景结合，体现未来感</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">金色光粒子环绕飘动，营造高级氛围</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">柔和的自然光，温暖舒适的画面感受</div>
+                                </div>
+                            </div>
+
+                            <!-- 主体动作类 -->
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-3 flex items-center gap-2">
+                                    <span class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-green-600 text-xs">3</span>
+                                    主体动作类
+                                </h4>
+                                <div class="grid gap-2">
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">人物自然地看向镜头，表情松弛，适合口播或讲解</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">产品缓缓旋转展示，细节清晰，强调精致感</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">人物自信地走向镜头，步伐稳健</div>
+                                </div>
+                            </div>
+
+                            <!-- 氛围与情绪类 -->
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-3 flex items-center gap-2">
+                                    <span class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center text-purple-600 text-xs">4</span>
+                                    氛围与情绪类
+                                </h4>
+                                <div class="grid gap-2">
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">画面整体明亮、克制、可信，具有企业宣传片质感</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">画面节奏轻快但不浮躁，适合培训或课程传播</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">空间感强，画面干净，整体氛围专业有秩序</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">光线柔和，人物表达松弛自然，适合知识分享型内容</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-indigo-50 rounded-xl p-4">
+                                <p class="text-sm text-indigo-700">这些模块可以直接复制到你的提示词中，根据具体场景进行微调。</p>
+                            </div>
+
+                            <button onclick="completeStep(2)" class="w-full py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition">
+                                已掌握，继续学习
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步骤3: 常用风格 -->
+                <div class="bg-white rounded-2xl shadow-sm card-hover transition-all duration-300 overflow-hidden" data-step="3">
+                    <button onclick="toggleStep(3)" class="w-full p-6 flex items-center gap-4 text-left">
+                        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                            <span class="text-gray-400 font-bold">3</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-800">常用风格：企业宣传/品牌广告/科技发布会</h3>
+                            <p class="text-gray-500 text-sm mt-1">根据不同场景选择合适的风格模板</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 transform transition-transform step-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="step-content-3" class="hidden px-6 pb-6">
+                        <div class="border-t pt-6 space-y-4">
+                            <!-- 企业宣传片风 -->
+                            <div class="border border-gray-200 rounded-xl p-5">
+                                <h4 class="font-semibold text-gray-800 mb-2">企业宣传片风</h4>
+                                <p class="text-xs text-gray-500 mb-3">关键词：专业、可信、稳重、明亮、有秩序</p>
+                                <div class="space-y-2">
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">整体风格专业可信，具有企业宣传片质感</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">画面明亮干净，传递高效、可靠的品牌感受</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">空间有秩序，镜头克制稳定，强调专业表达</div>
+                                </div>
+                            </div>
+
+                            <!-- 品牌广告风 -->
+                            <div class="border border-gray-200 rounded-xl p-5">
+                                <h4 class="font-semibold text-gray-800 mb-2">品牌广告风</h4>
+                                <p class="text-xs text-gray-500 mb-3">关键词：高级、质感、简洁、强调细节</p>
+                                <div class="space-y-2">
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">画面具有品牌广告质感，强调材质细节与高级氛围</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">光影干净利落，突出产品和主体本身</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">镜头流畅，细节丰富，整体精致克制</div>
+                                </div>
+                            </div>
+
+                            <!-- 科技发布会风 -->
+                            <div class="border border-gray-200 rounded-xl p-5">
+                                <h4 class="font-semibold text-gray-800 mb-2">科技发布会风</h4>
+                                <p class="text-xs text-gray-500 mb-3">关键词：蓝黑色调、未来感、数字感、发布感</p>
+                                <div class="space-y-2">
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">科技感蓝色光效与简洁背景结合，体现未来感与创新感</div>
+                                    <div class="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">蓝黑色调背景，数字光效流动，具有发布会的仪式感</div>
+                                </div>
+                            </div>
+
+                            <button onclick="completeStep(3)" class="w-full py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition">
+                                已掌握，继续学习
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步骤4: 翻车修正 -->
+                <div class="bg-white rounded-2xl shadow-sm card-hover transition-all duration-300 overflow-hidden" data-step="4">
+                    <button onclick="toggleStep(4)" class="w-full p-6 flex items-center gap-4 text-left">
+                        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                            <span class="text-gray-400 font-bold">4</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-800">翻车修正指南：画面出问题怎么修</h3>
+                            <p class="text-gray-500 text-sm mt-1">画面一翻车，知道怎么修而不是重新生成</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400 transform transition-transform step-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div id="step-content-4" class="hidden px-6 pb-6">
+                        <div class="border-t pt-6 space-y-4">
+                            <div class="bg-red-50 rounded-xl p-5">
+                                <h4 class="font-medium text-red-800 mb-3">常见翻车问题及修正方法</h4>
+                                <div class="space-y-3">
+                                    <div class="bg-white rounded-lg p-3">
+                                        <div class="text-sm font-medium text-red-600 mb-1">问题：画面抖动、不稳定</div>
+                                        <div class="text-sm text-gray-600">修正：添加"镜头稳定克制"、"画面平稳"</div>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-3">
+                                        <div class="text-sm font-medium text-red-600 mb-1">问题：主体变形、扭曲</div>
+                                        <div class="text-sm text-gray-600">修正：简化动作描述，添加"保持主体形态稳定"</div>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-3">
+                                        <div class="text-sm font-medium text-red-600 mb-1">问题：风格不统一</div>
+                                        <div class="text-sm text-gray-600">修正：明确一个主风格，删除冲突的风格词</div>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-3">
+                                        <div class="text-sm font-medium text-red-600 mb-1">问题：运动方向错误</div>
+                                        <div class="text-sm text-gray-600">修正：明确方向词，如"从左向右"、"由远及近"</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-green-50 rounded-xl p-5">
+                                <h4 class="font-medium text-green-800 mb-3">修正步骤</h4>
+                                <ol class="text-sm text-green-700 space-y-2">
+                                    <li>1. 定位问题：哪个模块出了问题？</li>
+                                    <li>2. 针对修正：只改有问题的部分，不要全盘重写</li>
+                                    <li>3. 保留有效版本：记录成功的提示词模板</li>
+                                </ol>
+                            </div>
+
+                            <div class="bg-indigo-50 rounded-xl p-4">
+                                <h4 class="font-medium text-indigo-800 mb-2">团队沉淀建议</h4>
+                                <ul class="text-sm text-indigo-700 space-y-1">
+                                    <li>• 哪个模板最好用</li>
+                                    <li>• 哪种运镜最适合人物口播</li>
+                                    <li>• 哪种风格最适合企业宣传</li>
+                                    <li>• 哪种修正语句最能减少翻车</li>
+                                </ul>
+                                <p class="text-xs text-indigo-600 mt-2">这样一段时间后，团队会形成自己的内部资产，而不是每个人都重复抽卡</p>
+                            </div>
+
+                            <button onclick="completeStep(4)" class="w-full py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition">
+                                完成学习
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 场景模板 -->
+    <section id="templates-section" class="section-content hidden">
+        <div class="max-w-5xl mx-auto px-4 py-12">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">高频场景模板</h1>
+                <p class="text-gray-600">点击复制，直接使用</p>
+            </div>
+
+            <div class="grid gap-6">
+                <!-- 人物口播 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 template-card border-2 border-transparent transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">人物口播/知识分享</h3>
+                        <button onclick="copyTemplate(this)" class="px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition copy-btn">
+                            复制
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed template-text">
+                        一位[职业/身份]，[穿着描述]，自然地看向镜头，表情松弛自信，正在讲解[内容主题]，背景是[具体环境]，光线柔和明亮，画面干净有秩序，镜头稳定克制，适合知识分享的专业氛围
+                    </div>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">人物自然</span>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">镜头稳定</span>
+                        <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">专业氛围</span>
+                    </div>
+                </div>
+
+                <!-- 产品展示 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 template-card border-2 border-transparent transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">产品展示/品牌广告</h3>
+                        <button onclick="copyTemplate(this)" class="px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition copy-btn">
+                            复制
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed template-text">
+                        [产品名称/描述]，[材质/质感细节]，缓缓旋转展示，细节清晰，强调精致感和专业性，背景是[背景描述]，光影干净利落，金色光粒子环绕飘动，高级商业广告质感，特写镜头，慢动作
+                    </div>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">产品旋转</span>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">细节清晰</span>
+                        <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">高级质感</span>
+                    </div>
+                </div>
+
+                <!-- 企业宣传 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 template-card border-2 border-transparent transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">企业宣传/办公场景</h3>
+                        <button onclick="copyTemplate(this)" class="px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition copy-btn">
+                            复制
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed template-text">
+                        [场景描述：现代化办公室/会议室等]，[人物活动]，空间感强，画面干净，整体氛围专业有秩序，光线柔和，画面明亮，传递高效可靠的品牌感受，企业宣传片质感，中景镜头缓慢推进
+                    </div>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">空间感强</span>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">专业有序</span>
+                        <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">企业质感</span>
+                    </div>
+                </div>
+
+                <!-- 科技发布 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 template-card border-2 border-transparent transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">科技发布会/产品发布</h3>
+                        <button onclick="copyTemplate(this)" class="px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition copy-btn">
+                            复制
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed template-text">
+                        [产品/场景描述]，蓝黑色调背景，科技感蓝色光效与简洁背景结合，数字光效流动，体现未来感与创新感，具有发布会的仪式感，画面高级克制，镜头流畅
+                    </div>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">科技感</span>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">未来感</span>
+                        <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">发布仪式</span>
+                    </div>
+                </div>
+
+                <!-- 创意转场 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 template-card border-2 border-transparent transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">创意转场/特效视频</h3>
+                        <button onclick="copyTemplate(this)" class="px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition copy-btn">
+                            复制
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 leading-relaxed template-text">
+                        [起始画面]，逐渐变形融化成[中间形态]，[变形过程描述]，最终过渡到[结束画面]，[风格对比描述]，快节奏剪辑风格，流畅的转场效果
+                    </div>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">创意变形</span>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">流畅转场</span>
+                        <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">风格对比</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 提示词工坊 -->
+    <section id="workshop-section" class="section-content hidden">
+        <div class="max-w-4xl mx-auto px-4 py-12">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">提示词工坊</h1>
+                <p class="text-gray-600">输入你的提示词，获取AI评分和改进建议</p>
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">你的提示词</label>
+                <textarea id="prompt-input" rows="6" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition resize-none" placeholder="在这里输入你的AI视频提示词..."></textarea>
+                
+                <div class="flex items-center justify-between mt-4">
+                    <div class="text-sm text-gray-500">
+                        <span id="char-count">0</span> 字
+                    </div>
+                    <button onclick="analyzePrompt()" id="analyze-btn" class="px-6 py-2.5 gradient-bg text-white rounded-xl font-medium hover:opacity-90 transition flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                        开始评分
+                    </button>
+                </div>
+            </div>
+
+            <!-- 结果区域 -->
+            <div id="result-section" class="hidden fade-in">
+                <!-- 评分卡片 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                    <div class="flex items-center gap-6">
+                        <div class="relative">
+                            <div class="w-24 h-24 rounded-full score-ring flex items-center justify-center" style="--score: 0%">
+                                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center">
+                                    <span id="score-value" class="text-3xl font-bold text-primary">--</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">综合评分</h3>
+                            <p id="score-comment" class="text-gray-600 text-sm">等待评分...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 详细分析 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">详细分析</h3>
+                    <div id="analysis-content" class="space-y-4">
+                        <!-- 动态填充 -->
+                    </div>
+                </div>
+
+                <!-- 改进建议 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">改进建议</h3>
+                    <div id="suggestions-content" class="space-y-3">
+                        <!-- 动态填充 -->
+                    </div>
+                </div>
+
+                <!-- 模型推荐 -->
+                <div class="bg-white rounded-2xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">推荐模型</h3>
+                    <div id="model-recommendations" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- 动态填充 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // ===== 配置区域 =====
+        // 部署 Cloudflare Worker 后，将下面的 URL 替换为你的 Worker URL
+        const WORKER_URL = 'https://ai-video-prompt-trainer.nutllwhy.workers.dev';
+        // ====================
+
+        // 状态管理
+        let completedSteps = JSON.parse(localStorage.getItem('completedSteps') || '[]');
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProgress();
+            
+            // 字数统计
+            document.getElementById('prompt-input').addEventListener('input', (e) => {
+                document.getElementById('char-count').textContent = e.target.value.length;
+            });
+        });
+
+        // 显示对应区块
+        function showSection(section) {
+            document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(section + '-section').classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-primary', 'font-medium');
+                btn.classList.add('text-gray-600');
+            });
+            document.querySelector('[data-section="' + section + '"]').classList.remove('text-gray-600');
+            document.querySelector('[data-section="' + section + '"]').classList.add('text-primary', 'font-medium');
+        }
+
+        // 切换步骤展开/收起
+        function toggleStep(step) {
+            const content = document.getElementById('step-content-' + step);
+            const card = document.querySelector('[data-step="' + step + '"]');
+            const arrow = card.querySelector('.step-arrow');
+            
+            content.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        // 完成步骤
+        function completeStep(step) {
+            if (!completedSteps.includes(step)) {
+                completedSteps.push(step);
+                localStorage.setItem('completedSteps', JSON.stringify(completedSteps));
+            }
+            
+            const card = document.querySelector('[data-step="' + step + '"]');
+            const circle = card.querySelector('.w-12');
+            circle.classList.remove('bg-gray-100', 'bg-primary/10');
+            circle.classList.add('bg-green-100');
+            circle.innerHTML = '<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+            
+            updateProgress();
+            toggleStep(step);
+            
+            // 自动展开下一个
+            if (step < 4) {
+                setTimeout(() => toggleStep(step + 1), 300);
+            }
+        }
+
+        // 更新进度
+        function updateProgress() {
+            const progress = (completedSteps.length / 4) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            document.getElementById('progress-text').textContent = completedSteps.length + '/4 已完成';
+        }
+
+        // 复制模板
+        function copyTemplate(btn) {
+            const templateText = btn.parentElement.parentElement.querySelector('.template-text').textContent;
+            navigator.clipboard.writeText(templateText).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = '已复制！';
+                btn.classList.remove('bg-primary/10', 'text-primary');
+                btn.classList.add('bg-green-100', 'text-green-600');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('bg-green-100', 'text-green-600');
+                    btn.classList.add('bg-primary/10', 'text-primary');
+                }, 2000);
+            });
+        }
+
+        // 分析提示词
+        async function analyzePrompt() {
+            const prompt = document.getElementById('prompt-input').value.trim();
+            if (!prompt) {
+                alert('请输入提示词');
+                return;
+            }
+
+            const btn = document.getElementById('analyze-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> 分析中...';
+
+            try {
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: prompt }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('请求失败: ' + response.status);
+                }
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                const content = data.choices[0].message.content;
+                
+                // 解析JSON
+                let result;
+                try {
+                    result = JSON.parse(content);
+                } catch (e) {
+                    // 尝试提取JSON
+                    const jsonMatch = content.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        result = JSON.parse(jsonMatch[0]);
+                    } else {
+                        throw new Error('无法解析AI响应');
+                    }
+                }
+
+                displayResult(result);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('分析失败：' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg> 开始评分';
+            }
+        }
+
+        // 显示结果
+        function displayResult(result) {
+            document.getElementById('result-section').classList.remove('hidden');
+            
+            // 评分
+            const score = result.score;
+            document.getElementById('score-value').textContent = score;
+            document.getElementById('score-comment').textContent = result.comment;
+            
+            // 评分环动画
+            const scoreRing = document.querySelector('.score-ring');
+            setTimeout(() => {
+                scoreRing.style.setProperty('--score', score + '%');
+            }, 100);
+
+            // 详细分析
+            const analysisHtml = Object.entries(result.analysis).map(function(entry) {
+                var key = entry[0];
+                var value = entry[1];
+                var scoreClass = value.score >= 7 ? 'bg-green-100 text-green-700' : value.score >= 4 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700';
+                return '<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">' +
+                    '<span class="text-gray-700">' + key + '</span>' +
+                    '<div class="flex items-center gap-3">' +
+                    '<span class="text-sm text-gray-500">' + value.comment + '</span>' +
+                    '<span class="px-2 py-1 ' + scoreClass + ' rounded text-sm font-medium">' + value.score + '/10</span>' +
+                    '</div></div>';
+            }).join('');
+            document.getElementById('analysis-content').innerHTML = analysisHtml;
+
+            // 改进建议
+            const suggestionsHtml = result.suggestions.map(function(s, i) {
+                return '<div class="flex items-start gap-3 p-3 bg-indigo-50 rounded-lg">' +
+                    '<span class="flex-shrink-0 w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-sm font-medium">' + (i + 1) + '</span>' +
+                    '<p class="text-sm text-indigo-700">' + s + '</p>' +
+                    '</div>';
+            }).join('');
+            document.getElementById('suggestions-content').innerHTML = suggestionsHtml;
+
+            // 模型推荐
+            const modelsHtml = result.recommendedModels.map(function(m) {
+                var borderClass = m.suitability === '高' ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50';
+                var badgeClass = m.suitability === '高' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600';
+                return '<div class="p-4 border-2 ' + borderClass + ' rounded-xl">' +
+                    '<div class="flex items-center justify-between mb-2">' +
+                    '<h4 class="font-semibold text-gray-800">' + m.name + '</h4>' +
+                    '<span class="px-2 py-1 ' + badgeClass + ' rounded text-xs font-medium">匹配度：' + m.suitability + '</span>' +
+                    '</div>' +
+                    '<p class="text-sm text-gray-600">' + m.reason + '</p>' +
+                    '</div>';
+            }).join('');
+            document.getElementById('model-recommendations').innerHTML = modelsHtml;
+
+            // 滚动到结果
+            document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>
