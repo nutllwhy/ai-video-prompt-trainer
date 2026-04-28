@@ -60,6 +60,7 @@
                     <button onclick="showSection('learn')" class="nav-btn text-gray-600 hover:text-primary transition" data-section="learn">学习中心</button>
                     <button onclick="showSection('keywords')" class="nav-btn text-gray-600 hover:text-primary transition" data-section="keywords">关键词库</button>
                     <button onclick="showSection('templates')" class="nav-btn text-gray-600 hover:text-primary transition" data-section="templates">场景模板</button>
+                    <button onclick="showSection('guide')" class="nav-btn text-gray-600 hover:text-primary transition" data-section="guide">功能说明</button>
                     <button onclick="showSection('workshop')" class="nav-btn text-gray-600 hover:text-primary transition" data-section="workshop">提示词工坊</button>
                 </div>
             </div>
@@ -714,6 +715,231 @@
         </div>
     </section>
 
+    <!-- 功能说明 -->
+    <section id="guide-section" class="section-content hidden">
+        <div class="max-w-4xl mx-auto px-4 py-12">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">功能说明</h1>
+                <p class="text-gray-600">了解AI视频生成工具的核心功能，选择正确的生成方式</p>
+            </div>
+
+            <!-- 模型对比 -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    模型选择指南
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <!-- 可灵 -->
+                    <div class="border-2 border-blue-200 bg-blue-50 rounded-xl p-5">
+                        <h3 class="font-semibold text-blue-800 mb-3">可灵（快手）</h3>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <span class="font-medium text-gray-700">核心优势：</span>
+                                <p class="text-gray-600 mt-1">人物动作自然流畅、物理世界模拟强、支持最长2分钟视频</p>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">最佳场景：</span>
+                                <ul class="text-gray-600 mt-1 space-y-1">
+                                    <li>• 人物口播、知识分享</li>
+                                    <li>• 舞蹈、运动类视频</li>
+                                    <li>• 企业宣传片</li>
+                                    <li>• 复杂运动场景</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">特色功能：</span>
+                                <p class="text-gray-600 mt-1">首尾帧控制、视频续写、原生4K输出</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Seedance -->
+                    <div class="border-2 border-purple-200 bg-purple-50 rounded-xl p-5">
+                        <h3 class="font-semibold text-purple-800 mb-3">Seedance 2.0（字节）</h3>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <span class="font-medium text-gray-700">核心优势：</span>
+                                <p class="text-gray-600 mt-1">多模态输入、导演级运镜、原生音画同步、角色一致性</p>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">最佳场景：</span>
+                                <ul class="text-gray-600 mt-1 space-y-1">
+                                    <li>• 产品展示、品牌广告</li>
+                                    <li>• 多镜头叙事短片</li>
+                                    <li>• 动作迁移、角色复刻</li>
+                                    <li>• 电影感画面</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-700">特色功能：</span>
+                                <p class="text-gray-600 mt-1">9张图+3段视频+3段音频混合输入、自动分镜</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 首尾帧 vs 参考 -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    首尾帧 vs 参考图：什么时候用哪个？
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- 首尾帧 -->
+                    <div>
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-5 mb-4">
+                            <h3 class="font-semibold text-green-800 mb-2">首尾帧</h3>
+                            <p class="text-sm text-green-700">指定视频的"起点"和"终点"，让AI填补中间过程</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-800 mb-2">适用场景</h4>
+                                <ul class="text-sm text-gray-600 space-y-2">
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-green-500 mt-0.5">✓</span>
+                                        <span>需要精确控制开头和结尾画面</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-green-500 mt-0.5">✓</span>
+                                        <span>转场效果（从A场景过渡到B场景）</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-green-500 mt-0.5">✓</span>
+                                        <span>变形效果（物体A变成物体B）</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-green-500 mt-0.5">✓</span>
+                                        <span>需要保证首尾画面完全符合预期</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-yellow-50 rounded-lg p-4">
+                                <h4 class="font-medium text-yellow-800 mb-2">使用技巧</h4>
+                                <ul class="text-sm text-yellow-700 space-y-1">
+                                    <li>• 首帧和尾帧的构图要相似，过渡更自然</li>
+                                    <li>• 配合提示词描述中间的动作过程</li>
+                                    <li>• 适合5-10秒的短视频</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 参考图 -->
+                    <div>
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 mb-4">
+                            <h3 class="font-semibold text-blue-800 mb-2">参考图</h3>
+                            <p class="text-sm text-blue-700">提供风格、角色或场景参考，AI基于参考生成视频</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-800 mb-2">适用场景</h4>
+                                <ul class="text-sm text-gray-600 space-y-2">
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-blue-500 mt-0.5">✓</span>
+                                        <span>需要保持角色/产品外观一致</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-blue-500 mt-0.5">✓</span>
+                                        <span>复刻特定风格（如电影画面风格）</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-blue-500 mt-0.5">✓</span>
+                                        <span>产品展示（保持产品外观不变）</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-blue-500 mt-0.5">✓</span>
+                                        <span>动作迁移（参考视频的动作）</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-yellow-50 rounded-lg p-4">
+                                <h4 class="font-medium text-yellow-800 mb-2">使用技巧</h4>
+                                <ul class="text-sm text-yellow-700 space-y-1">
+                                    <li>• 参考图越清晰，生成效果越好</li>
+                                    <li>• 可同时上传多张参考图（角色+场景+风格）</li>
+                                    <li>• Seedance支持最多9张图片混合参考</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 视频时长选择 -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    视频时长选择建议
+                </h2>
+                
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 rounded-xl p-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">5秒</h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• 产品展示、特写镜头</li>
+                            <li>• 简单动作、静态转动态</li>
+                            <li>• 成功率最高、画面最稳定</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">10秒</h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• 人物口播、知识分享</li>
+                            <li>• 舞蹈、运动类视频</li>
+                            <li>• 需要完整动作周期</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">15秒</h3>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• 多镜头叙事短片</li>
+                            <li>• 完整故事片段</li>
+                            <li>• Seedance 2.0专属</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-4 bg-indigo-50 rounded-lg p-4">
+                    <p class="text-sm text-indigo-700">
+                        <span class="font-medium">提示：</span>时长越长，画面抖动和角色变形的风险越大。建议先用5秒测试效果，满意后再尝试更长时长。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 下一步引导 -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-indigo-800">准备好了吗？</h3>
+                        <p class="text-indigo-700 text-sm mt-1">去<span class="font-medium">提示词工坊</span>测试你的提示词，获取模型推荐和时长建议。</p>
+                    </div>
+                    <button onclick="showSection('workshop')" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition">
+                        去练习
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- 提示词工坊 -->
     <section id="workshop-section" class="section-content hidden">
         <div class="max-w-4xl mx-auto px-4 py-12">
@@ -1076,90 +1302,91 @@
             // 模型推荐与时长建议
             // 分析提示词特征
             const hasTech = prompt.includes('科技') || prompt.includes('发布') || prompt.includes('未来感') || prompt.includes('蓝黑') || prompt.includes('数字');
-            const hasProduct = prompt.includes('产品') || prompt.includes('展示') || prompt.includes('旋转') || prompt.includes('质感') || prompt.includes('精致');
+            const hasProduct = prompt.includes('产品') || prompt.includes('展示') || prompt.includes('旋转') || prompt.includes('质感') || prompt.includes('精致') || prompt.includes('品牌') || prompt.includes('广告');
             const hasPerson = prompt.includes('人物') || prompt.includes('口播') || prompt.includes('讲解') || prompt.includes('知识') || prompt.includes('女孩') || prompt.includes('男孩') || prompt.includes('人');
-            const hasDance = prompt.includes('跳舞') || prompt.includes('舞动') || prompt.includes('翩翩起舞');
+            const hasDance = prompt.includes('跳舞') || prompt.includes('舞动') || prompt.includes('翩翩起舞') || prompt.includes('运动');
             const hasEnterprise = prompt.includes('企业') || prompt.includes('办公') || prompt.includes('专业') || prompt.includes('商务');
-            const hasCreative = prompt.includes('转场') || prompt.includes('变形') || prompt.includes('特效') || prompt.includes('创意');
+            const hasCreative = prompt.includes('转场') || prompt.includes('变形') || prompt.includes('特效') || prompt.includes('创意') || prompt.includes('叙事') || prompt.includes('故事');
             const hasSlowMotion = prompt.includes('慢动作') || prompt.includes('缓慢');
+            const hasMultiShot = prompt.includes('镜头') && (prompt.includes('切换') || prompt.includes('转换') || prompt.includes('推进'));
 
             // 根据特征推荐模型
-            if (hasTech) {
+            if (hasProduct) {
                 recommendedModels.push({
-                    name: '可灵O3',
-                    reason: '擅长科技感场景，蓝黑色调和数字光效表现优秀，发布会风格首选',
-                    suitability: '高',
-                    duration: hasSlowMotion ? '5秒' : '5-10秒'
-                });
-                recommendedModels.push({
-                    name: 'Seedance2.0',
-                    reason: '科技场景表现稳定，适合简洁的科技感背景',
-                    suitability: '中',
-                    duration: '5秒'
-                });
-            } else if (hasProduct) {
-                recommendedModels.push({
-                    name: 'Seedance2.0',
-                    reason: '产品质感呈现最佳，材质细节和光影效果出色，品牌广告首选',
+                    name: 'Seedance 2.0',
+                    reason: '产品质感呈现最佳，支持多模态输入保持产品外观一致，品牌广告首选',
                     suitability: '高',
                     duration: '5秒'
                 });
                 recommendedModels.push({
-                    name: '可灵O3',
+                    name: '可灵',
                     reason: '产品旋转展示流畅，适合简单的产品展示场景',
                     suitability: '中',
                     duration: '5秒'
                 });
             } else if (hasDance) {
                 recommendedModels.push({
-                    name: '可灵O3',
-                    reason: '人物动作流畅自然，舞蹈类视频表现最佳',
+                    name: '可灵',
+                    reason: '人物动作流畅自然，物理世界模拟强，舞蹈运动类视频表现最佳',
                     suitability: '高',
                     duration: '10秒'
                 });
                 recommendedModels.push({
-                    name: 'Seedance2.0',
-                    reason: '画面美感好，适合静态或慢动作的舞蹈画面',
+                    name: 'Seedance 2.0',
+                    reason: '画面美感好，支持动作迁移功能，可复刻参考视频动作',
                     suitability: '中',
                     duration: '5秒'
                 });
             } else if (hasPerson || hasEnterprise) {
                 recommendedModels.push({
-                    name: '可灵O3',
+                    name: '可灵',
                     reason: '人物表情和动作自然，口播、知识分享、企业宣传首选',
                     suitability: '高',
                     duration: '5-10秒'
                 });
                 recommendedModels.push({
-                    name: 'Seedance2.0',
-                    reason: '画面质感好，适合静态人物或专业形象展示',
+                    name: 'Seedance 2.0',
+                    reason: '支持角色参考保持一致性，适合需要角色连续出镜的场景',
                     suitability: '中',
                     duration: '5秒'
                 });
-            } else if (hasCreative) {
+            } else if (hasCreative || hasMultiShot) {
                 recommendedModels.push({
-                    name: '可灵O3',
-                    reason: '转场和变形效果流畅，创意视频首选',
+                    name: 'Seedance 2.0',
+                    reason: '导演级运镜，自动分镜，支持15秒多镜头叙事，角色一致性强',
                     suitability: '高',
-                    duration: '5秒'
+                    duration: '10-15秒'
                 });
                 recommendedModels.push({
-                    name: 'Seedance2.0',
-                    reason: '画面细节丰富，适合需要精致感的创意场景',
+                    name: '可灵',
+                    reason: '首尾帧控制精准，适合转场变形效果',
+                    suitability: '中',
+                    duration: '5秒'
+                });
+            } else if (hasTech) {
+                recommendedModels.push({
+                    name: '可灵',
+                    reason: '科技感场景表现出色，蓝黑色调和数字光效自然',
+                    suitability: '高',
+                    duration: hasSlowMotion ? '5秒' : '5-10秒'
+                });
+                recommendedModels.push({
+                    name: 'Seedance 2.0',
+                    reason: '多模态输入可上传科技风格参考图，画面质感优秀',
                     suitability: '中',
                     duration: '5秒'
                 });
             } else {
                 // 默认推荐
                 recommendedModels.push({
-                    name: '可灵O3',
-                    reason: '综合能力强，人物动作自然，适合多种场景',
+                    name: '可灵',
+                    reason: '综合能力强，人物动作自然，物理模拟优秀，适合多种场景',
                     suitability: '中',
                     duration: '5秒'
                 });
                 recommendedModels.push({
-                    name: 'Seedance2.0',
-                    reason: '画面质感优秀，产品展示和静态场景表现出色',
+                    name: 'Seedance 2.0',
+                    reason: '多模态输入灵活，导演级运镜，适合需要精确控制的创作',
                     suitability: '中',
                     duration: '5秒'
                 });
