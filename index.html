@@ -557,11 +557,6 @@
     </section>
 
     <script>
-        // ===== 配置区域 =====
-        // 部署 Cloudflare Worker 后，将下面的 URL 替换为你的 Worker URL
-        const WORKER_URL = 'https://ai-video-prompt-trainer.nutllwhy.workers.dev';
-        // ====================
-
         // 状态管理
         let completedSteps = JSON.parse(localStorage.getItem('completedSteps') || '[]');
 
@@ -643,8 +638,8 @@
             });
         }
 
-        // 分析提示词
-        async function analyzePrompt() {
+        // 分析提示词（规则评分）
+        function analyzePrompt() {
             const prompt = document.getElementById('prompt-input').value.trim();
             if (!prompt) {
                 alert('请输入提示词');
@@ -655,50 +650,231 @@
             btn.disabled = true;
             btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> 分析中...';
 
-            try {
-                const response = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ prompt: prompt }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('请求失败: ' + response.status);
-                }
-
-                const data = await response.json();
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-
-                const content = data.choices[0].message.content;
-                
-                // 解析JSON
-                let result;
-                try {
-                    result = JSON.parse(content);
-                } catch (e) {
-                    // 尝试提取JSON
-                    const jsonMatch = content.match(/\{[\s\S]*\}/);
-                    if (jsonMatch) {
-                        result = JSON.parse(jsonMatch[0]);
-                    } else {
-                        throw new Error('无法解析AI响应');
-                    }
-                }
-
+            // 规则评分
+            const result = evaluatePrompt(prompt);
+            
+            setTimeout(() => {
                 displayResult(result);
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert('分析失败：' + error.message);
-            } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg> 开始评分';
+            }, 500);
+        }
+
+        // 规则评分函数
+        function evaluatePrompt(prompt) {
+            const analysis = {
+                '主体描述': { score: 0, comment: '' },
+                '动作细节': { score: 0, comment: '' },
+                '场景环境': { score: 0, comment: '' },
+                '风格氛围': { score: 0, comment: '' },
+                '镜头语言': { score: 0, comment: '' }
+            };
+            
+            const suggestions = [];
+            const recommendedModels = [];
+
+            // 1. 主体描述评分
+            const subjectKeywords = ['人物', '女孩', '男孩', '男人', '女人', '人', '产品', '物品', '物体', '模特', '商务人士', '穿着', '一位', '一个'];
+            const subjectDetailKeywords = ['西装', '连衣裙', '白色', '黑色', '红色', '蓝色', '年轻', '中年', '职业', '精致', '优雅'];
+            let subjectScore = 0;
+            let hasSubject = false;
+            let hasSubjectDetail = false;
+            
+            subjectKeywords.forEach(kw => {
+                if (prompt.includes(kw)) { hasSubject = true; subjectScore += 3; }
+            });
+            subjectDetailKeywords.forEach(kw => {
+                if (prompt.includes(kw)) { hasSubjectDetail = true; subjectScore += 2; }
+            });
+            
+            analysis['主体描述'].score = Math.min(10, subjectScore);
+            if (!hasSubject) {
+                analysis['主体描述'].comment = '缺少主体描述';
+                suggestions.push('添加明确的主体描述，如"一位穿着西装的商务人士"');
+            } else if (!hasSubjectDetail) {
+                analysis['主体描述'].comment = '主体描述较简单';
+                suggestions.push('丰富主体细节，如穿着、外貌、气质等');
+            } else {
+                analysis['主体描述'].comment = '主体描述清晰';
             }
+
+            // 2. 动作细节评分
+            const actionKeywords = ['走', '跑', '跳', '旋转', '展示', '看向', '微笑', '说话', '讲解', '移动', '飘动', '飞', '舞动', '缓缓', '自信地', '自然地', '轻柔地'];
+            const actionDetailKeywords = ['从左向右', '由远及近', '缓慢', '快速', '流畅', '优雅', '稳健', '松弛'];
+            let actionScore = 0;
+            let hasAction = false;
+            let hasActionDetail = false;
+            
+            actionKeywords.forEach(kw => {
+                if (prompt.includes(kw)) { hasAction = true; actionScore += 3; }
+            });
+            actionDetailKeywords.forEach(kw => {
+                if (prompt.includes(kw)) { hasActionDetail = true; actionScore += 2; }
+            });
+            
+            analysis['动作细节'].score = Math.min(10, actionScore);
+            if (!hasAction) {
+                analysis['动作细节'].comment = '缺少动作描述';
+                suggestions.push('添加主体的动作或状态，如"缓缓旋转展示"、"自信地走向镜头"');
+            } else if (!hasActionDetail) {
+                analysis['动作细节'].comment = '动作描述可更具体';
+                suggestions.push('添加动作的方向感和速度感，如"从左向右缓慢移动"');
+            } else {
+                analysis['动作细节'].comment = '动作描述具体';
+            }
+
+            // 3. 场景环境评分
+            const sceneKeywords = ['背景', '场景', '环境', '办公室', '会议室', '草地', '天空', '室内', '室外', '舞台', '街道', '建筑', '自然', '城市'];
+            const sceneDetailKeywords = ['阳光', '蓝天', '白云', '现代化', '简洁', '干净', '明亮', '科技感', '蓝黑色', '金色'];
+            let sceneScore = 0;
+            let hasScene = false;
+            let hasSceneDetail = false;
+            
+            sceneKeywords.forEach(kw => {
+                if (prompt.includes(kw)) { hasScene = true; sceneScore += 3; }
+            });
+            sceneDetailKeywords.forEach(kw => {
+                if (prompt.includes(kw)) { hasSceneDetail = true; sceneScore += 2; }
+            });
+            
+            analysis['场景环境'].score = Math.min(10, sceneScore);
+            if (!hasScene) {
+                analysis['场景环境'].comment = '缺少场景描述';
+                suggestions.push('添加具体的场景环境，如"现代化办公室"、"阳光明媚的草地"');
+            } else if (!hasSceneDetail) {
+                analysis['场景环境'].comment = '场景描述可更丰富';
+                suggestions.push('添加场景的光线、色调等细节');
+            } else {
+                analysis['场景环境'].comment = '场景描述丰富';
+            }
+
+            // 4. 风格氛围评分
+            const styleKeywords = ['风格', '质感', '氛围', '电影感', '企业宣传', '品牌广告', '科技', '高级', '专业', '商业', '发布'];
+            const styleDetailKeywords = ['明亮', '干净', '柔和', '克制', '稳重', '未来感', '仪式感', '精致', '高级感', '专业氛围'];
+            let styleScore = 0;
+            let hasStyle = false;
+            let hasStyleDetail = false;
+            
+            styleKeywords.forEach(kw => {
+                if (prompt.includes(kw)) { hasStyle = true; styleScore += 3; }
+            });
+            styleDetailKeywords.forEach(kw => {
+                if (prompt.includes(kw)) { hasStyleDetail = true; styleScore += 2; }
+            });
+            
+            analysis['风格氛围'].score = Math.min(10, styleScore);
+            if (!hasStyle) {
+                analysis['风格氛围'].comment = '缺少风格定义';
+                suggestions.push('明确视觉风格，如"企业宣传片质感"、"高级商业广告风格"');
+            } else if (!hasStyleDetail) {
+                analysis['风格氛围'].comment = '风格描述可更具体';
+                suggestions.push('添加氛围关键词，如"专业可信"、"高级精致"');
+            } else {
+                analysis['风格氛围'].comment = '风格定义明确';
+            }
+
+            // 5. 镜头语言评分
+            const cameraKeywords = ['镜头', '特写', '全景', '中景', '近景', '航拍', '跟拍', '推镜头', '拉镜头', '运镜'];
+            const cameraDetailKeywords = ['稳定', '流畅', '缓慢推进', '克制', '平稳', '移动'];
+            let cameraScore = 0;
+            let hasCamera = false;
+            let hasCameraDetail = false;
+            
+            cameraKeywords.forEach(kw => {
+                if (prompt.includes(kw)) { hasCamera = true; cameraScore += 3; }
+            });
+            cameraDetailKeywords.forEach(kw => {
+                if (prompt.includes(kw)) { hasCameraDetail = true; cameraScore += 2; }
+            });
+            
+            analysis['镜头语言'].score = Math.min(10, cameraScore);
+            if (!hasCamera) {
+                analysis['镜头语言'].comment = '缺少镜头语言';
+                suggestions.push('添加镜头描述，如"特写镜头"、"中景镜头缓慢推进"');
+            } else if (!hasCameraDetail) {
+                analysis['镜头语言'].comment = '镜头描述可更专业';
+                suggestions.push('添加运镜方式，如"镜头稳定克制"、"缓慢推进"');
+            } else {
+                analysis['镜头语言'].comment = '镜头语言专业';
+            }
+
+            // 计算总分
+            const totalScore = Object.values(analysis).reduce((sum, item) => sum + item.score, 0);
+            const avgScore = Math.round(totalScore / 5 * 10);
+
+            // 总体评价
+            let comment = '';
+            if (avgScore >= 80) {
+                comment = '优秀的提示词，结构完整，细节丰富';
+            } else if (avgScore >= 60) {
+                comment = '良好的提示词，建议补充更多细节';
+            } else if (avgScore >= 40) {
+                comment = '提示词结构不完整，建议参考骨架公式优化';
+            } else {
+                comment = '提示词过于简单，请参考学习内容完善';
+            }
+
+            // 模型推荐
+            if (prompt.includes('科技') || prompt.includes('发布') || prompt.includes('未来感') || prompt.includes('蓝黑')) {
+                recommendedModels.push({
+                    name: '可灵O3',
+                    reason: '适合科技感、发布会风格的视频，擅长未来感场景',
+                    suitability: '高'
+                });
+                recommendedModels.push({
+                    name: 'Seedance2.0',
+                    reason: '通用性强，适合多种风格',
+                    suitability: '中'
+                });
+            } else if (prompt.includes('产品') || prompt.includes('展示') || prompt.includes('旋转') || prompt.includes('质感')) {
+                recommendedModels.push({
+                    name: 'Seedance2.0',
+                    reason: '擅长产品展示和细节表现，质感呈现优秀',
+                    suitability: '高'
+                });
+                recommendedModels.push({
+                    name: '可灵O3',
+                    reason: '通用选择，适合产品类视频',
+                    suitability: '中'
+                });
+            } else if (prompt.includes('人物') || prompt.includes('口播') || prompt.includes('讲解') || prompt.includes('知识')) {
+                recommendedModels.push({
+                    name: '可灵O3',
+                    reason: '人物动作自然，适合口播和知识分享类内容',
+                    suitability: '高'
+                });
+                recommendedModels.push({
+                    name: 'Seedance2.0',
+                    reason: '通用选择，人物表现稳定',
+                    suitability: '中'
+                });
+            } else {
+                recommendedModels.push({
+                    name: '可灵O3',
+                    reason: '通用性强，适合多种场景',
+                    suitability: '中'
+                });
+                recommendedModels.push({
+                    name: 'Seedance2.0',
+                    reason: '通用性强，适合多种场景',
+                    suitability: '中'
+                });
+            }
+
+            // 字数建议
+            if (prompt.length < 20) {
+                suggestions.push('提示词过短，建议扩展到50字以上');
+            } else if (prompt.length < 50) {
+                suggestions.push('可以进一步丰富细节描述');
+            }
+
+            return {
+                score: avgScore,
+                comment: comment,
+                analysis: analysis,
+                suggestions: suggestions.length > 0 ? suggestions : ['提示词结构完整，可以尝试生成视频了'],
+                recommendedModels: recommendedModels
+            };
         }
 
         // 显示结果
