@@ -1073,50 +1073,95 @@
                 comment = '提示词过于简单，请参考学习内容完善';
             }
 
-            // 模型推荐
-            if (prompt.includes('科技') || prompt.includes('发布') || prompt.includes('未来感') || prompt.includes('蓝黑')) {
+            // 模型推荐与时长建议
+            // 分析提示词特征
+            const hasTech = prompt.includes('科技') || prompt.includes('发布') || prompt.includes('未来感') || prompt.includes('蓝黑') || prompt.includes('数字');
+            const hasProduct = prompt.includes('产品') || prompt.includes('展示') || prompt.includes('旋转') || prompt.includes('质感') || prompt.includes('精致');
+            const hasPerson = prompt.includes('人物') || prompt.includes('口播') || prompt.includes('讲解') || prompt.includes('知识') || prompt.includes('女孩') || prompt.includes('男孩') || prompt.includes('人');
+            const hasDance = prompt.includes('跳舞') || prompt.includes('舞动') || prompt.includes('翩翩起舞');
+            const hasEnterprise = prompt.includes('企业') || prompt.includes('办公') || prompt.includes('专业') || prompt.includes('商务');
+            const hasCreative = prompt.includes('转场') || prompt.includes('变形') || prompt.includes('特效') || prompt.includes('创意');
+            const hasSlowMotion = prompt.includes('慢动作') || prompt.includes('缓慢');
+
+            // 根据特征推荐模型
+            if (hasTech) {
                 recommendedModels.push({
                     name: '可灵O3',
-                    reason: '适合科技感、发布会风格的视频，擅长未来感场景',
-                    suitability: '高'
+                    reason: '擅长科技感场景，蓝黑色调和数字光效表现优秀，发布会风格首选',
+                    suitability: '高',
+                    duration: hasSlowMotion ? '5秒' : '5-10秒'
                 });
                 recommendedModels.push({
                     name: 'Seedance2.0',
-                    reason: '通用性强，适合多种风格',
-                    suitability: '中'
+                    reason: '科技场景表现稳定，适合简洁的科技感背景',
+                    suitability: '中',
+                    duration: '5秒'
                 });
-            } else if (prompt.includes('产品') || prompt.includes('展示') || prompt.includes('旋转') || prompt.includes('质感')) {
+            } else if (hasProduct) {
                 recommendedModels.push({
                     name: 'Seedance2.0',
-                    reason: '擅长产品展示和细节表现，质感呈现优秀',
-                    suitability: '高'
+                    reason: '产品质感呈现最佳，材质细节和光影效果出色，品牌广告首选',
+                    suitability: '高',
+                    duration: '5秒'
                 });
                 recommendedModels.push({
                     name: '可灵O3',
-                    reason: '通用选择，适合产品类视频',
-                    suitability: '中'
+                    reason: '产品旋转展示流畅，适合简单的产品展示场景',
+                    suitability: '中',
+                    duration: '5秒'
                 });
-            } else if (prompt.includes('人物') || prompt.includes('口播') || prompt.includes('讲解') || prompt.includes('知识')) {
+            } else if (hasDance) {
                 recommendedModels.push({
                     name: '可灵O3',
-                    reason: '人物动作自然，适合口播和知识分享类内容',
-                    suitability: '高'
+                    reason: '人物动作流畅自然，舞蹈类视频表现最佳',
+                    suitability: '高',
+                    duration: '10秒'
                 });
                 recommendedModels.push({
                     name: 'Seedance2.0',
-                    reason: '通用选择，人物表现稳定',
-                    suitability: '中'
+                    reason: '画面美感好，适合静态或慢动作的舞蹈画面',
+                    suitability: '中',
+                    duration: '5秒'
+                });
+            } else if (hasPerson || hasEnterprise) {
+                recommendedModels.push({
+                    name: '可灵O3',
+                    reason: '人物表情和动作自然，口播、知识分享、企业宣传首选',
+                    suitability: '高',
+                    duration: '5-10秒'
+                });
+                recommendedModels.push({
+                    name: 'Seedance2.0',
+                    reason: '画面质感好，适合静态人物或专业形象展示',
+                    suitability: '中',
+                    duration: '5秒'
+                });
+            } else if (hasCreative) {
+                recommendedModels.push({
+                    name: '可灵O3',
+                    reason: '转场和变形效果流畅，创意视频首选',
+                    suitability: '高',
+                    duration: '5秒'
+                });
+                recommendedModels.push({
+                    name: 'Seedance2.0',
+                    reason: '画面细节丰富，适合需要精致感的创意场景',
+                    suitability: '中',
+                    duration: '5秒'
                 });
             } else {
+                // 默认推荐
                 recommendedModels.push({
                     name: '可灵O3',
-                    reason: '通用性强，适合多种场景',
-                    suitability: '中'
+                    reason: '综合能力强，人物动作自然，适合多种场景',
+                    suitability: '中',
+                    duration: '5秒'
                 });
                 recommendedModels.push({
                     name: 'Seedance2.0',
-                    reason: '通用性强，适合多种场景',
-                    suitability: '中'
+                    reason: '画面质感优秀，产品展示和静态场景表现出色',
+                    suitability: '中',
+                    duration: '5秒'
                 });
             }
 
@@ -1181,8 +1226,10 @@
                 return '<div class="p-4 border-2 ' + borderClass + ' rounded-xl">' +
                     '<div class="flex items-center justify-between mb-2">' +
                     '<h4 class="font-semibold text-gray-800">' + m.name + '</h4>' +
+                    '<div class="flex items-center gap-2">' +
+                    '<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">时长：' + m.duration + '</span>' +
                     '<span class="px-2 py-1 ' + badgeClass + ' rounded text-xs font-medium">匹配度：' + m.suitability + '</span>' +
-                    '</div>' +
+                    '</div></div>' +
                     '<p class="text-sm text-gray-600">' + m.reason + '</p>' +
                     '</div>';
             }).join('');
